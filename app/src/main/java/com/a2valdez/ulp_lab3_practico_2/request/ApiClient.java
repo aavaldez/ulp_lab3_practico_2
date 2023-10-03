@@ -18,18 +18,8 @@ import java.io.ObjectOutputStream;
 
 public class ApiClient {
 
-    private static SharedPreferences sp;
-
-    private static SharedPreferences conectar(Context context){
-        if( sp == null ){
-            sp = context.getSharedPreferences("datos", 0);
-        }
-        return sp;
-    }
-
     public static void guardar(Context context, Usuario usuario){
-        File carpeta = context.getFilesDir();
-        File archivo = new File(carpeta,"usuario.dat");
+        File archivo = new File(context.getFilesDir(), "usuario.dat");
         try {
             FileOutputStream fos = new FileOutputStream(archivo);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -45,21 +35,18 @@ public class ApiClient {
     }
 
     public static Usuario leer(Context context){
+        File archivo = new File(context.getFilesDir(), "usuario.dat");
+        if(!archivo.exists()){
+            return null;
+        }
         Usuario usuario = null;
-        File carpeta = context.getFilesDir();
-        File archivo = new File(carpeta,"usuario.dat");
         try {
             FileInputStream fis = new FileInputStream(archivo);
             BufferedInputStream bis = new BufferedInputStream(fis);
             ObjectInputStream ois = new ObjectInputStream(bis);
-            Usuario u = (Usuario)ois.readObject();
-            while (u != null){
-                u = (Usuario)ois.readObject();
-            }
+            usuario = (Usuario)ois.readObject();
+            ois.close();
             fis.close();
-            if(u != null ){
-                usuario = u;
-            }
         } catch (FileNotFoundException e) {
             Toast.makeText(context,"Error al guardar",Toast.LENGTH_LONG).show();
         } catch (ClassNotFoundException e) {
@@ -71,28 +58,10 @@ public class ApiClient {
     }
 
     public static Usuario login(Context context, String email, String pass){
-        Usuario usuario = null;
-        File carpeta = context.getFilesDir();
-        File archivo = new File(carpeta,"usuario.dat");
-        try {
-            FileInputStream fis = new FileInputStream(archivo);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            ObjectInputStream ois = new ObjectInputStream(bis);
-            Usuario u = (Usuario)ois.readObject();
-            while (u != null){
-                u = (Usuario)ois.readObject();
-            }
-            fis.close();
-            if( u.getMail().equals(email) && u.getPassword().equals(pass)){
-                usuario = u;
-            }
-        } catch (FileNotFoundException e) {
-            Toast.makeText(context,"Error al guardar",Toast.LENGTH_LONG).show();
-        } catch (ClassNotFoundException e) {
-            Toast.makeText(context,"Error de Clase",Toast.LENGTH_LONG).show();
-        } catch (IOException io) {
-            Toast.makeText(context, "Error de E/S", Toast.LENGTH_LONG).show();
+        Usuario usuario = leer(context);
+        if( usuario.getMail().equals(email) && usuario.getPassword().equals(pass)){
+            return usuario;
         }
-        return usuario;
+        return null;
     }
 }
