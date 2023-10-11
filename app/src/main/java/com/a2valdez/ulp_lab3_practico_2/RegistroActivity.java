@@ -24,13 +24,11 @@ public class RegistroActivity extends AppCompatActivity {
         mv.getMUsuario().observe(this, new Observer<Usuario>() {
             @Override
             public void onChanged(Usuario usuario) {
-                if (usuario != null){
-                    binding.etDni.setText(String.valueOf(usuario.getDni()));
-                    binding.etApellido.setText(usuario.getApellido());
-                    binding.etNombre.setText(usuario.getNombre());
-                    binding.etMail.setText(usuario.getMail());
-                    binding.etPassword.setText(usuario.getPassword());
-                }
+                binding.etDni.setText(String.valueOf(usuario.getDni()));
+                binding.etApellido.setText(usuario.getApellido());
+                binding.etNombre.setText(usuario.getNombre());
+                binding.etMail.setText(usuario.getMail());
+                binding.etPassword.setText(usuario.getPassword());
             }
         });
         Intent intent = getIntent();
